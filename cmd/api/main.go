@@ -1,23 +1,38 @@
 package main
 
 import (
-	"log"
-	"net/http"
+    "log"
 
-	"github.com/labstack/echo/v4"
+    "github.com/fitnis/api/internal/config"
+    "github.com/fitnis/api/internal/database"
+    "github.com/fitnis/api/internal/routes"
+
+    "github.com/labstack/echo/v4"
 )
 
 func main() {
-	// Initialize a new Echo instance
-	e := echo.New()
+    // 1. Load Viper config
+    cfg, err := config.LoadConfig()
+    if err != nil {
+        log.Fatalf("Error loading config: %v", err)
+    }
 
-	// Define a simple GET endpoint at "/"
-	e.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{
-			"message": "Hello from Echo!",
-		})
-	})
+    // 2. Initialize DB
+    db, err := database.InitDB(cfg)
+    if err != nil {
+        log.Fatalf("Failed to connect to DB: %v", err)
+    }
 
-	// Start the server on port 3000
-	log.Fatal(e.Start(":3000"))
+    // 3. Create Echo instance
+    e := echo.New()
+
+    // 4. Register routes
+    routes.Register(e, db)
+
+    // 5. Start server on configured port or default
+    port := cfg.ServerPort
+    if port == "" {
+        port = "3000"
+    }
+    log.Fatal(e.Start(":" + port))
 }
