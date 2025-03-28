@@ -1,42 +1,24 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
 	"github.com/fitnis/api/internal/handlers"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	mux := http.NewServeMux()
+	router := gin.Default()
 
-	// Scheduling
-	mux.HandleFunc("/api/appointments/schedule", handlers.AppointmentHandler)
-	mux.HandleFunc("/api/orders", handlers.OrderHandler)
+	api := router.Group("/api")
+	{
+		handlers.RegisterAppointmentRoutes(api)
+		handlers.RegisterOrderRoutes(api)
+		handlers.RegisterPatientRoutes(api)
+		handlers.RegisterRecordRoutes(api)
+		handlers.RegisterLabRoutes(api)
+		handlers.RegisterPrescriptionRoutes(api)
+		handlers.RegisterReferralRoutes(api)
+	}
 
-	// Patients
-	mux.HandleFunc("/api/patients/admit", handlers.PatientHandler)
-	mux.HandleFunc("/api/patients/register", handlers.RegisterHandler)
-
-	// Records
-	mux.HandleFunc("/api/records/chart", handlers.ChartHandler)
-	mux.HandleFunc("/api/records/exam", handlers.ExamHandler)
-	mux.HandleFunc("/api/records/exam/results", handlers.ExamResultsHandler)
-
-	// Lab
-	mux.HandleFunc("/api/lab/collectSample", handlers.CollectSampleHandler)
-	mux.HandleFunc("/api/lab/recordSample", handlers.RecordSampleHandler)
-	mux.HandleFunc("/api/lab/processSample", handlers.ProcessSampleHandler)
-	mux.HandleFunc("/api/lab/evaluateSample", handlers.EvaluateSampleHandler)
-
-	// Prescriptions
-	mux.HandleFunc("/api/prescriptions", handlers.PrescriptionHandler)
-	mux.HandleFunc("/api/prescriptions/prescribe", handlers.PrescribeHandler)
-
-	// Referrals
-	mux.HandleFunc("/api/referrals", handlers.ReferralHandler)
-	mux.HandleFunc("/api/referrals/specialist", handlers.SpecialistReferralHandler)
-
-	log.Println("Server started at http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	router.Run(":8080")
 }

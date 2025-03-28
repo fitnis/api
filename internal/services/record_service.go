@@ -2,22 +2,25 @@ package services
 
 import "github.com/fitnis/api/internal/models"
 
-var notes []models.ChartNote
-var exams []models.ExamRequest
-var results []models.ExamResult
+var chartNotes []models.ChartNote
+var examRequests []models.ExamRequest
+var examResults []models.ExamResult
 
-func RecordChartNote(note models.ChartNote) {
-	notes = append(notes, note)
+func RecordChartNote(note models.ChartNote) models.GenericResponse {
+	chartNotes = append(chartNotes, note)
+	return models.GenericResponse{Message: "Chart updated"}
 }
 
 func GetChartNotes() []models.ChartNote {
-	return notes
+	return chartNotes
 }
 
-func PerformExam(exam models.ExamRequest) {
-	exams = append(exams, exam)
+func PerformExam(req models.ExamRequest) models.GenericResponse {
+	examRequests = append(examRequests, req)
+	return models.GenericResponse{Message: "Exam performed"}
 }
 
-func RecordExamResult(res models.ExamResult) {
-	results = append(results, res)
+func RecordExamResult(result models.ExamResult) models.GenericResponse {
+	examResults = append(examResults, result)
+	return models.GenericResponse{Message: "Result recorded"}
 }

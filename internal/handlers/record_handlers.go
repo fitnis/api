@@ -1,44 +1,40 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/fitnis/api/internal/models"
 	"github.com/fitnis/api/internal/services"
+
+	"github.com/gin-gonic/gin"
 )
 
-func ChartHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		// curl -X POST -d '{"patientId":"123","note":"Patient is recovering well."}' http://localhost:8080/api/records/chart
-		var req models.ChartNote
-		json.NewDecoder(r.Body).Decode(&req)
-		services.RecordChartNote(req)
-		w.WriteHeader(http.StatusCreated)
-	case http.MethodGet:
-		// curl http://localhost:8080/api/records/chart
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(services.GetChartNotes())
-	}
+func RegisterRecordRoutes(rg *gin.RouterGroup) {
+	rec := rg.Group("/records")
+	rec.POST("/chart", recordChart)
+	rec.GET("/chart", getChart)
+	rec.POST("/exam", performExam)
+	rec.POST("/exam/results", recordExamResult)
 }
 
-func ExamHandler(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST -d '{"patientId":"123","examType":"MRI"}' http://localhost:8080/api/records/exam
-	if r.Method == http.MethodPost {
-		var req models.ExamRequest
-		json.NewDecoder(r.Body).Decode(&req)
-		services.PerformExam(req)
-		w.WriteHeader(http.StatusCreated)
-	}
+func recordChart(c *gin.Context) {
+	var req models.ChartNote
+	_ = c.ShouldBindJSON(&req)
+	c.JSON(http.StatusCreated, services.RecordChartNote(req))
 }
 
-func ExamResultsHandler(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST -d '{"patientId":"123","result":"No abnormalities found"}' http://localhost:8080/api/records/exam/results
-	if r.Method == http.MethodPost {
-		var req models.ExamResult
-		json.NewDecoder(r.Body).Decode(&req)
-		services.RecordExamResult(req)
-		w.WriteHeader(http.StatusCreated)
-	}
+func getChart(c *gin.Context) {
+	c.JSON(http.StatusOK, services.GetChartNotes())
+}
+
+func performExam(c *gin.Context) {
+	var req models.ExamRequest
+	_ = c.ShouldBindJSON(&req)
+	c.JSON(http.StatusCreated, services.PerformExam(req))
+}
+
+func recordExamResult(c *gin.Context) {
+	var req models.ExamResult
+	_ = c.ShouldBindJSON(&req)
+	c.JSON(http.StatusCreated, services.RecordExamResult(req))
 }

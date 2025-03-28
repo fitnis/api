@@ -1,49 +1,42 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/fitnis/api/internal/models"
 	"github.com/fitnis/api/internal/services"
+
+	"github.com/gin-gonic/gin"
 )
 
-func CollectSampleHandler(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST -d '{"sampleId":"s1","patientId":"123","type":"blood"}' http://localhost:8080/api/lab/collectSample
-	if r.Method == http.MethodPost {
-		var req models.Sample
-		json.NewDecoder(r.Body).Decode(&req)
-		services.CollectSample(req)
-		w.WriteHeader(http.StatusCreated)
-	}
+func RegisterLabRoutes(rg *gin.RouterGroup) {
+	lab := rg.Group("/lab")
+	lab.POST("/collectSample", collect)
+	lab.POST("/recordSample", record)
+	lab.POST("/processSample", process)
+	lab.POST("/evaluateSample", evaluate)
 }
 
-func RecordSampleHandler(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST -d '{"sampleId":"s2","patientId":"123","type":"urine"}' http://localhost:8080/api/lab/recordSample
-	if r.Method == http.MethodPost {
-		var req models.Sample
-		json.NewDecoder(r.Body).Decode(&req)
-		services.RecordSample(req)
-		w.WriteHeader(http.StatusCreated)
-	}
+func collect(c *gin.Context) {
+	var req models.Sample
+	_ = c.ShouldBindJSON(&req)
+	c.JSON(http.StatusCreated, services.CollectSample(req))
 }
 
-func ProcessSampleHandler(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST -d '{"sampleId":"s3","patientId":"123","type":"blood"}' http://localhost:8080/api/lab/processSample
-	if r.Method == http.MethodPost {
-		var req models.Sample
-		json.NewDecoder(r.Body).Decode(&req)
-		services.ProcessSample(req)
-		w.WriteHeader(http.StatusCreated)
-	}
+func record(c *gin.Context) {
+	var req models.Sample
+	_ = c.ShouldBindJSON(&req)
+	c.JSON(http.StatusCreated, services.RecordSample(req))
 }
 
-func EvaluateSampleHandler(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST -d '{"sampleId":"s4","result":"Negative"}' http://localhost:8080/api/lab/evaluateSample
-	if r.Method == http.MethodPost {
-		var req models.SampleEvaluation
-		json.NewDecoder(r.Body).Decode(&req)
-		services.EvaluateSample(req)
-		w.WriteHeader(http.StatusCreated)
-	}
+func process(c *gin.Context) {
+	var req models.Sample
+	_ = c.ShouldBindJSON(&req)
+	c.JSON(http.StatusCreated, services.ProcessSample(req))
+}
+
+func evaluate(c *gin.Context) {
+	var req models.SampleEvaluation
+	_ = c.ShouldBindJSON(&req)
+	c.JSON(http.StatusCreated, services.EvaluateSample(req))
 }

@@ -4,18 +4,19 @@ import "github.com/fitnis/api/internal/models"
 
 var patients []models.PatientRequest
 
-func AdmitPatient(p models.PatientRequest) {
-	patients = append(patients, p)
+func AdmitPatient(req models.PatientRequest) models.GenericResponse {
+	patients = append(patients, req)
+	return models.GenericResponse{Message: "Patient admitted"}
 }
 
-func ListAdmittedPatients() []models.PatientRequest {
+func GetAdmittedPatients() []models.PatientRequest {
 	return patients
 }
 
 func DischargePatient(id string) {
-	// mock discharge
+	patients = []models.PatientRequest{}
 }
 
-func RegisterPatient(p models.PatientRequest) {
-	// simulate registration
+func RegisterPatient(req models.PatientRequest) models.GenericResponse {
+	return models.GenericResponse{Message: "Patient registered"}
 }
