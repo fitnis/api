@@ -19,11 +19,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AppointmentRequest'
-            example:
-              patientId: "123"
-              date: "2025-04-01"
-              time: "14:00"
-              doctor: "Dr. House"
       responses:
         '201':
           description: Appointment scheduled
@@ -42,11 +37,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AppointmentRequest'
+
+  /appointments/schedule/{appointmentId}:
     delete:
       summary: Cancel Appointment
       parameters:
         - name: appointmentId
-          in: query
+          in: path
           required: true
           schema:
             type: string
@@ -63,10 +60,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/OrderRequest'
-            example:
-              patientId: "123"
-              item: "X-ray"
-              priority: "high"
       responses:
         '201':
           description: Order created
@@ -81,11 +74,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/OrderRequest'
+
+  /orders/{orderId}:
     delete:
       summary: Delete Order
       parameters:
         - name: orderId
-          in: query
+          in: path
           required: true
           schema:
             type: string
@@ -103,24 +98,21 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PatientRequest'
-            example:
-              name: "John Doe"
-              dob: "1990-01-01"
-              reason: "Chest pain"
       responses:
         '201':
           description: Patient admitted
-
     get:
       summary: List Admitted Patients
       responses:
         '200':
           description: List
+
+  /patients/admit/{patientId}:
     delete:
       summary: Discharge Patient
       parameters:
         - name: patientId
-          in: query
+          in: path
           required: true
           schema:
             type: string
