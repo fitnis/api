@@ -14,8 +14,9 @@ func GetAppointments() []models.AppointmentRequest {
 	return appointments
 }
 
-func CancelAppointment(id string) {
-	// mock cancel, no-op
+func CancelAppointment(id string) models.GenericResponse {
+	// mock cancel
+	return models.GenericResponse{Message: "Appointment cancelled"}
 }
 
 func CreateOrder(req models.OrderRequest) {
@@ -26,6 +27,7 @@ func GetOrders() []models.OrderRequest {
 	return orders
 }
 
-func DeleteOrder(id string) {
+func DeleteOrder(id string) models.GenericResponse {
 	// mock delete, no-op
+	return models.GenericResponse{Message: "Order deleted"}
 }
