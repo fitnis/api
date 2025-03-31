@@ -11,9 +11,9 @@ import (
 
 func RegisterOrderRoutes(rg *gin.RouterGroup) {
 	grp := rg.Group("/orders")
-	grp.POST("", createOrder)
-	grp.GET("", getOrders)
-	grp.DELETE("/:orderId", deleteOrder)
+	grp.POST("/new", createOrder)
+	grp.GET("/get", getOrders)
+	grp.DELETE("/delete/:orderId", deleteOrder)
 }
 
 func createOrder(c *gin.Context) {

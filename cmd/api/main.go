@@ -2,13 +2,15 @@ package main
 
 import (
 	"github.com/fitnis/api/internal/handlers"
-
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := gin.Default()
+	// Enable CORS
 
+	router := gin.Default()
+	router.Use(cors.Default())
 	api := router.Group("/api")
 	{
 		handlers.RegisterAppointmentRoutes(api)
