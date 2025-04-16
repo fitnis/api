@@ -1,367 +1,712 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
-  title: Medical Backend API
+  title: Medical API System
   version: 1.0.0
-  description: Single API service with modular service layers
+  description: REST API for managing patient medical records, examinations, samples, prescriptions, and referrals
 
 servers:
   - url: http://localhost:8080/api
 
 paths:
-
-  ### SchedulingService
-  /appointments/schedule:
-    post:
-      summary: Schedule Appointment
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AppointmentRequest'
-      responses:
-        '201':
-          description: Appointment scheduled
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GenericResponse'
+  # Patient endpoints
+  /patients:
     get:
-      summary: Get Appointments
+      summary: Get all patients
       responses:
         '200':
-          description: List of appointments
+          description: List of patients
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AppointmentRequest'
-
-  /appointments/schedule/{appointmentId}:
-    delete:
-      summary: Cancel Appointment
-      parameters:
-        - name: appointmentId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Appointment cancelled
-
-  /orders:
+                  $ref: '#/components/schemas/Patient'
     post:
-      summary: Create Order
+      summary: Create new patient
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrderRequest'
+              $ref: '#/components/schemas/CreatePatientRequest'
       responses:
         '201':
-          description: Order created
+          description: Patient created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '400':
+          description: Invalid request
+
+  /patients/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
     get:
-      summary: Get Orders
+      summary: Get patient by ID
       responses:
         '200':
-          description: List of orders
+          description: Patient details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '404':
+          description: Patient not found
+    put:
+      summary: Update patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePatientRequest'
+      responses:
+        '200':
+          description: Updated patient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '404':
+          description: Patient not found
+    delete:
+      summary: Delete patient
+      responses:
+        '204':
+          description: Patient deleted
+        '404':
+          description: Patient not found
+
+  # Examination endpoints
+  /examinations:
+    get:
+      summary: Get all examinations
+      responses:
+        '200':
+          description: List of examinations
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrderRequest'
-
-  /orders/{orderId}:
-    delete:
-      summary: Delete Order
-      parameters:
-        - name: orderId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Order deleted
-
-  ### PatientService
-  /patients/admit:
+                  $ref: '#/components/schemas/Examination'
     post:
-      summary: Admit Patient
+      summary: Create new examination
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatientRequest'
+              $ref: '#/components/schemas/CreateExaminationRequest'
       responses:
         '201':
-          description: Patient admitted
+          description: Examination created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Examination'
+        '400':
+          description: Invalid request
+
+  /examinations/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
     get:
-      summary: List Admitted Patients
+      summary: Get examination by ID
       responses:
         '200':
-          description: List
-
-  /patients/admit/{patientId}:
-    delete:
-      summary: Discharge Patient
-      parameters:
-        - name: patientId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Patient discharged
-
-  /patients/register:
-    post:
-      summary: Register at Clinic
+          description: Examination details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Examination'
+        '404':
+          description: Examination not found
+    put:
+      summary: Update examination
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatientRequest'
-      responses:
-        '201':
-          description: Registered
-
-  ### RecordService
-  /records/chart:
-    post:
-      summary: Record in Chart
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ChartNote'
-      responses:
-        '201':
-          description: Chart updated
-    get:
-      summary: Get Chart Notes
+              $ref: '#/components/schemas/UpdateExaminationRequest'
       responses:
         '200':
-          description: Notes retrieved
+          description: Updated examination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Examination'
+        '404':
+          description: Examination not found
+    delete:
+      summary: Delete examination
+      responses:
+        '204':
+          description: Examination deleted
+        '404':
+          description: Examination not found
 
-  /records/exam:
+  /examinations/patient/{patientId}:
+    parameters:
+      - name: patientId
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get examinations by patient ID
+      responses:
+        '200':
+          description: List of examinations for a patient
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Examination'
+                  
+  # Sample endpoints
+  /samples:
+    get:
+      summary: Get all samples
+      responses:
+        '200':
+          description: List of samples
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sample'
     post:
-      summary: Perform Exam
+      summary: Create new sample (triggers automatic evaluation and prescription generation)
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExamRequest'
+              $ref: '#/components/schemas/SampleRequest'
       responses:
         '201':
-          description: Exam recorded
+          description: Sample created, evaluated and prescription generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sample'
+        '400':
+          description: Invalid request
 
-  /records/exam/results:
-    post:
-      summary: Record Exam Results
+  /samples/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get sample by ID
+      responses:
+        '200':
+          description: Sample details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sample'
+        '404':
+          description: Sample not found
+    put:
+      summary: Update sample
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExamResult'
+              $ref: '#/components/schemas/UpdateSampleRequest'
       responses:
-        '201':
-          description: Results recorded
-
-  ### LabService
-  /lab/collectSample:
-    post:
-      summary: Collect Sample
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Sample'
+        '200':
+          description: Updated sample
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sample'
+        '404':
+          description: Sample not found
+    delete:
+      summary: Delete sample
       responses:
-        '201':
-          description: Sample collected
+        '204':
+          description: Sample deleted
+        '404':
+          description: Sample not found
 
-  /lab/recordSample:
-    post:
-      summary: Record Sample
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Sample'
+  /samples/examination/{examinationId}:
+    parameters:
+      - name: examinationId
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get samples by examination ID
       responses:
-        '201':
-          description: Sample recorded
-
-  /lab/processSample:
-    post:
-      summary: Process Sample
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Sample'
-      responses:
-        '201':
-          description: Processing started
-
-  /lab/evaluateSample:
-    post:
-      summary: Evaluate Sample
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SampleEvaluation'
-      responses:
-        '201':
-          description: Evaluation completed
-
-  ### PrescriptionService
-  /prescriptions/prescribe:
-    post:
-      summary: Prescribe Medication
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Prescription'
-      responses:
-        '201':
-          description: Medication prescribed
-
+        '200':
+          description: List of samples for an examination
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sample'
+                  
+  # Prescription endpoints
   /prescriptions:
+    get:
+      summary: Get all prescriptions
+      responses:
+        '200':
+          description: List of prescriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prescription'
     post:
-      summary: Create Prescription
+      summary: Create new prescription (manual creation)
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Prescription'
+              $ref: '#/components/schemas/PrescriptionRequest'
       responses:
         '201':
           description: Prescription created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+        '400':
+          description: Invalid request
 
-  ### ReferralService
-  /referrals/specialist:
-    post:
-      summary: Refer to Specialist
+  /prescriptions/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get prescription by ID
+      responses:
+        '200':
+          description: Prescription details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+        '404':
+          description: Prescription not found
+    put:
+      summary: Update prescription
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Referral'
+              $ref: '#/components/schemas/UpdatePrescriptionRequest'
       responses:
-        '201':
-          description: Referred
+        '200':
+          description: Updated prescription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+        '404':
+          description: Prescription not found
+    delete:
+      summary: Delete prescription
+      responses:
+        '204':
+          description: Prescription deleted
+        '404':
+          description: Prescription not found
 
+  /prescriptions/examination/{examinationId}:
+    parameters:
+      - name: examinationId
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get prescriptions by examination ID
+      responses:
+        '200':
+          description: List of prescriptions for an examination
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prescription'
+                  
+  /prescriptions/{id}/validate:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      summary: Validate prescription by doctor
+      responses:
+        '200':
+          description: Prescription validated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  prescription:
+                    $ref: '#/components/schemas/Prescription'
+        '404':
+          description: Prescription not found
+          
+  /prescriptions/{id}/send:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      summary: Send prescription to pharmacy (requires validation first)
+      responses:
+        '200':
+          description: Prescription sent to pharmacy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  prescription:
+                    $ref: '#/components/schemas/Prescription'
+        '404':
+          description: Prescription not found or not validated
+
+  # Referral endpoints
   /referrals:
+    get:
+      summary: Get all referrals
+      responses:
+        '200':
+          description: List of referrals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Referral'
     post:
-      summary: Create Referral Note
+      summary: Create new referral
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Referral'
+              $ref: '#/components/schemas/ReferralRequest'
       responses:
         '201':
-          description: Referral note created
+          description: Referral created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Referral'
+        '400':
+          description: Invalid request
+
+  /referrals/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get referral by ID
+      responses:
+        '200':
+          description: Referral details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Referral'
+        '404':
+          description: Referral not found
+    put:
+      summary: Update referral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReferralRequest'
+      responses:
+        '200':
+          description: Updated referral
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Referral'
+        '404':
+          description: Referral not found
+    delete:
+      summary: Delete referral
+      responses:
+        '204':
+          description: Referral deleted
+        '404':
+          description: Referral not found
+
+  /referrals/examination/{examinationId}:
+    parameters:
+      - name: examinationId
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get referrals by examination ID
+      responses:
+        '200':
+          description: List of referrals for an examination
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Referral'
 
 components:
   schemas:
-    GenericResponse:
+    # Patient schemas
+    Patient:
       type: object
       properties:
-        message:
+        id:
+          type: integer
+        firstName:
           type: string
-    AppointmentRequest:
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+        details:
+          type: string
+          
+    CreatePatientRequest:
       type: object
+      required:
+        - firstName
+        - lastName
+        - birthDate
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+        details:
+          type: string
+          
+    UpdatePatientRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+        details:
+          type: string
+    
+    # Examination schemas
+    Examination:
+      type: object
+      properties:
+        id:
+          type: integer
+        patientID:
+          type: integer
+        examDate:
+          type: string
+          format: date-time
+        anamnesis:
+          type: string
+        diagnosis:
+          type: string
+          
+    CreateExaminationRequest:
+      type: object
+      required:
+        - patientId
+        - examDate
       properties:
         patientId:
+          type: integer
+        examDate:
           type: string
-        date:
+          format: date-time
+        anamnesis:
           type: string
-        time:
+        diagnosis:
           type: string
-        doctor:
-          type: string
-    OrderRequest:
+          
+    UpdateExaminationRequest:
       type: object
       properties:
-        patientId:
+        examDate:
           type: string
-        item:
+          format: date-time
+        anamnesis:
           type: string
-        priority:
+        diagnosis:
           type: string
-    PatientRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        dob:
-          type: string
-        reason:
-          type: string
-    ChartNote:
-      type: object
-      properties:
-        patientId:
-          type: string
-        note:
-          type: string
-    ExamRequest:
-      type: object
-      properties:
-        patientId:
-          type: string
-        examType:
-          type: string
-    ExamResult:
-      type: object
-      properties:
-        patientId:
-          type: string
-        result:
-          type: string
+    
+    # Sample schemas
     Sample:
       type: object
       properties:
-        sampleId:
-          type: string
-        patientId:
-          type: string
-        type:
-          type: string
-    SampleEvaluation:
-      type: object
-      properties:
-        sampleId:
+        id:
+          type: integer
+        examinationID:
+          type: integer
+        sampleType:
           type: string
         result:
           type: string
+          
+    SampleRequest:
+      type: object
+      required:
+        - examinationId
+        - sampleType
+      properties:
+        examinationId:
+          type: integer
+        sampleType:
+          type: string
+        result:
+          type: string
+          
+    UpdateSampleRequest:
+      type: object
+      properties:
+        sampleType:
+          type: string
+        result:
+          type: string
+    
+    # Prescription schemas
     Prescription:
       type: object
       properties:
-        patientId:
-          type: string
+        id:
+          type: integer
+        examinationID:
+          type: integer
         medication:
           type: string
         dosage:
           type: string
+        instructions:
+          type: string
+        validated:
+          type: boolean
+        sent:
+          type: boolean
+          
+    PrescriptionRequest:
+      type: object
+      required:
+        - examinationId
+        - medication
+        - dosage
+      properties:
+        examinationId:
+          type: integer
+        medication:
+          type: string
+        dosage:
+          type: string
+        instructions:
+          type: string
+          
+    UpdatePrescriptionRequest:
+      type: object
+      properties:
+        medication:
+          type: string
+        dosage:
+          type: string
+        instructions:
+          type: string
+        validated:
+          type: boolean
+        sent:
+          type: boolean
+    
+    # Referral schemas
     Referral:
       type: object
       properties:
-        patientId:
+        id:
+          type: integer
+        examinationID:
+          type: integer
+        specialist:
           type: string
-        department:
+        reason:
+          type: string
+          
+    ReferralRequest:
+      type: object
+      required:
+        - examinationId
+        - specialist
+        - reason
+      properties:
+        examinationId:
+          type: integer
+        specialist:
+          type: string
+        reason:
+          type: string
+          
+    UpdateReferralRequest:
+      type: object
+      properties:
+        specialist:
           type: string
         reason:
           type: string

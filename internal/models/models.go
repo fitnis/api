@@ -1,62 +1,70 @@
 package models
 
-type AppointmentRequest struct {
-	PatientID string `json:"patientId"`
-	Date      string `json:"date"`
-	Time      string `json:"time"`
-	Doctor    string `json:"doctor"`
+import (
+	"time"
+)
+
+// Patient model
+type Patient struct {
+	ID        uint `gorm:"primaryKey"`
+	FirstName string
+	LastName  string
+	BirthDate time.Time
+	Details   string
+
+	// One-to-many relationship: a patient can have multiple examinations
+	Examinations []Examination
 }
 
-type OrderRequest struct {
-	PatientID string `json:"patientId"`
-	Item      string `json:"item"`
-	Priority  string `json:"priority"`
+// Examination model
+type Examination struct {
+	ID        uint      `gorm:"primaryKey"`
+	PatientID uint      // foreign key for Patient
+	ExamDate  time.Time `gorm:"not null"`
+	Anamnesis string
+	Diagnosis string
+
+	// Belongs to
+	Patient Patient
+
+	// One-to-many relationships
+	Samples       []Sample
+	Prescriptions []Prescription
+	Referrals     []Referral
 }
 
-type PatientRequest struct {
-	Name   string `json:"name"`
-	DOB    string `json:"dob"`
-	Reason string `json:"reason"`
-}
-
-type ChartNote struct {
-	PatientID string `json:"patientId"`
-	Note      string `json:"note"`
-}
-
-type ExamRequest struct {
-	PatientID string `json:"patientId"`
-	ExamType  string `json:"examType"`
-}
-
-type ExamResult struct {
-	PatientID string `json:"patientId"`
-	Result    string `json:"result"`
-}
-
+// Sample model
 type Sample struct {
-	SampleID  string `json:"sampleId"`
-	PatientID string `json:"patientId"`
-	Type      string `json:"type"`
+	ID            uint `gorm:"primaryKey"`
+	ExaminationID uint // foreign key for Examination
+	SampleType    string
+	Result        string
+
+	// Belongs to
+	Examination Examination
 }
 
-type SampleEvaluation struct {
-	SampleID string `json:"sampleId"`
-	Result   string `json:"result"`
-}
-
+// Prescription model
 type Prescription struct {
-	PatientID  string `json:"patientId"`
-	Medication string `json:"medication"`
-	Dosage     string `json:"dosage"`
+	ID            uint `gorm:"primaryKey"`
+	ExaminationID uint // foreign key for Examination
+	Medication    string
+	Dosage        string
+	Instructions  string
+	Validated     bool
+	Sent          bool
+
+	// Belongs to
+	Examination Examination
 }
 
+// Referral model
 type Referral struct {
-	PatientID  string `json:"patientId"`
-	Department string `json:"department"`
-	Reason     string `json:"reason"`
-}
+	ID            uint `gorm:"primaryKey"`
+	ExaminationID uint // foreign key for Examination
+	Specialist    string
+	Reason        string
 
-type GenericResponse struct {
-	Message string `json:"message"`
+	// Belongs to
+	Examination Examination
 }
