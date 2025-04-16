@@ -19,7 +19,7 @@ func NewExaminationService(db *gorm.DB) *ExaminationService {
 }
 
 // CreateExamination adds a new examination to the database.
-func (s *ExaminationService) CreateExamination(patientID uint, examDate time.Time, anamnesis, diagnosis string) (models.Examination, error) {
+func (s *ExaminationService) CreateExamination(patientID uint, examDate *time.Time, anamnesis, diagnosis string) (models.Examination, error) {
 	exam := models.Examination{
 		PatientID: patientID,
 		ExamDate:  examDate,
@@ -70,7 +70,7 @@ func (s *ExaminationService) UpdateExamination(id uint, examDate time.Time, anam
 
 	// Update fields if provided
 	if !examDate.IsZero() {
-		exam.ExamDate = examDate
+		exam.ExamDate = &examDate
 	}
 	// Allow clearing fields by providing empty strings
 	exam.Anamnesis = anamnesis

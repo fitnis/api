@@ -14,8 +14,8 @@ var DB *gorm.DB
 // InitDB initializes the database connection and performs auto-migration.
 func InitDB() {
 	var err error
-	// Use "medical.db" as the SQLite database file.
-	DB, err = gorm.Open(sqlite.Open("medical.db"), &gorm.Config{})
+
+	DB, err = gorm.Open(sqlite.Open("fitnis.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}

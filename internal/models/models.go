@@ -9,7 +9,7 @@ type Patient struct {
 	ID        uint `gorm:"primaryKey"`
 	FirstName string
 	LastName  string
-	BirthDate time.Time
+	BirthDate *time.Time
 	Details   string
 
 	// One-to-many relationship: a patient can have multiple examinations
@@ -18,9 +18,9 @@ type Patient struct {
 
 // Examination model
 type Examination struct {
-	ID        uint      `gorm:"primaryKey"`
-	PatientID uint      // foreign key for Patient
-	ExamDate  time.Time `gorm:"not null"`
+	ID        uint       `gorm:"primaryKey"`
+	PatientID uint       // foreign key for Patient
+	ExamDate  *time.Time `gorm:"not null"`
 	Anamnesis string
 	Diagnosis string
 

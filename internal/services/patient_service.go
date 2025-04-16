@@ -20,7 +20,7 @@ func NewPatientService(db *gorm.DB) *PatientService {
 }
 
 // CreatePatient adds a new patient to the database.
-func (s *PatientService) CreatePatient(firstName, lastName, details string, birthDate time.Time) (models.Patient, error) {
+func (s *PatientService) CreatePatient(firstName, lastName, details string, birthDate *time.Time) (models.Patient, error) {
 	patient := models.Patient{
 		FirstName: firstName,
 		LastName:  lastName,
@@ -67,7 +67,7 @@ func (s *PatientService) UpdatePatient(id uint, firstName, lastName, details str
 		patient.LastName = lastName
 	}
 	if !birthDate.IsZero() {
-		patient.BirthDate = birthDate
+		patient.BirthDate = &birthDate
 	}
 	// Allow clearing details
 	patient.Details = details

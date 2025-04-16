@@ -25,14 +25,14 @@ func NewPatientHandler(s *services.PatientService) *PatientHandler {
 type CreatePatientRequest struct {
 	FirstName string    `json:"firstName" binding:"required"`
 	LastName  string    `json:"lastName" binding:"required"`
-	BirthDate time.Time `json:"birthDate" binding:"required,rfc3339"` // Ensure correct time format binding
+	BirthDate time.Time `json:"birthDate" binding:"required"` // Remove strict format requirement
 	Details   string    `json:"details"`
 }
 
 type UpdatePatientRequest struct {
 	FirstName string    `json:"firstName"`
 	LastName  string    `json:"lastName"`
-	BirthDate time.Time `json:"birthDate" time_format:"rfc3339"` // Ensure correct time format binding
+	BirthDate time.Time `json:"birthDate"` // Remove strict format requirement
 	Details   string    `json:"details"`
 }
 
@@ -82,7 +82,7 @@ func (h *PatientHandler) CreatePatient(c *gin.Context) {
 		return
 	}
 
-	patient, err := h.Service.CreatePatient(req.FirstName, req.LastName, req.Details, req.BirthDate)
+	patient, err := h.Service.CreatePatient(req.FirstName, req.LastName, req.Details, &req.BirthDate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create patient: " + err.Error()})
 		return

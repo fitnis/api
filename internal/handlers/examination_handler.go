@@ -22,13 +22,13 @@ func NewExaminationHandler(s *services.ExaminationService) *ExaminationHandler {
 // Request structs remain the same
 type CreateExaminationRequest struct {
 	PatientID uint      `json:"patientId" binding:"required"`
-	ExamDate  time.Time `json:"examDate" binding:"required,rfc3339"`
+	ExamDate  time.Time `json:"examDate" binding:"required"`
 	Anamnesis string    `json:"anamnesis"`
 	Diagnosis string    `json:"diagnosis"`
 }
 
 type UpdateExaminationRequest struct {
-	ExamDate  time.Time `json:"examDate" time_format:"rfc3339"`
+	ExamDate  time.Time `json:"examDate"`
 	Anamnesis string    `json:"anamnesis"`
 	Diagnosis string    `json:"diagnosis"`
 }
@@ -92,7 +92,7 @@ func (h *ExaminationHandler) CreateExamination(c *gin.Context) {
 
 	// Optional: Check if patient exists first using PatientService
 
-	examination, err := h.Service.CreateExamination(req.PatientID, req.ExamDate, req.Anamnesis, req.Diagnosis)
+	examination, err := h.Service.CreateExamination(req.PatientID, &req.ExamDate, req.Anamnesis, req.Diagnosis)
 	if err != nil {
 		// Handle potential foreign key constraint errors etc.
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create examination: " + err.Error()})
