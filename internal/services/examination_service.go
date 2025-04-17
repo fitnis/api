@@ -34,8 +34,7 @@ func (s *ExaminationService) CreateExamination(patientID uint, examDate *time.Ti
 func (s *ExaminationService) GetExaminations() ([]models.Examination, error) {
 	var examinations []models.Examination
 	// Preload associated data if needed, e.g., Patient
-	// result := s.DB.Preload("Patient").Find(&examinations)
-	result := s.DB.Find(&examinations)
+	result := s.DB.Preload("Patient").Find(&examinations)
 	return examinations, result.Error
 }
 
